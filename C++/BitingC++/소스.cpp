@@ -76,6 +76,15 @@ public:
         if (this == &s) return;
         *this = s; // 대입 연산자 재사용
     }
+    bool equal(const string& s)
+    {
+        if (s.len != len) return false;
+        for (int i = 0; i < len; i++)
+        {
+            if (str[i] != s.str[i]) return false;
+        }
+        return true;
+    }
 
     int strlen() const
     {
@@ -90,10 +99,11 @@ public:
 
 int main()
 {
-    string s1('a', 3);     // "aaa"
-    string s2("bc");       // "bc"
-    s1.add_string(s2);     // "aaabc"
+    string s1("abc");     // "aaa"
+    string s2("adc");       // "bc"
+    //s1.add_string(s2);     // "aaabc"
     std::cout << s1.c_str() << "\n";   // aaabc
     std::cout << s1.strlen() << "\n";  // 5
+    std::cout << s1.equal(s2);
     return 0;
 }

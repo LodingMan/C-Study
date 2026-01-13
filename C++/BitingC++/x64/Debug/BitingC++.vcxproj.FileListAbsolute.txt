@@ -1,1 +1,2 @@
 D:\Projects\C++\BitingC++\x64\Debug\BitingC++.exe
+C:\Projects\C-Study\C++\BitingC++\x64\Debug\BitingC++.exe
