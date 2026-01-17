@@ -1,109 +1,114 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
-//#include <cstring>   // strlen, strcpy, strcat
+#include<iostream>
+#include "header.h"
 
-
-class string
+class String 
 {
 private:
-    char* str;
-    int len; // '\0' 제외 길이
-
+	char* string;
+	int len;
+	int totalMemory;
 public:
+	void SetTotalMem(int len)
+	{
+		if (totalMemory < len) totalMemory = len;
+	}
+	void AddLastNull(int len)
+	{
+		string[len] = '\0';
+	}
+	String(char c)
+	{
+		len = 1;
+		string = new char[len+1];
+		string[0] = c;
+		SetTotalMem(len);
+		AddLastNull(len);
+	}
+	String(const char* str)
+	{
+		len = strlen(str);
+		string = new char[len+1];
+		memcpy(string, str, len);
+		SetTotalMem(len);
+		AddLastNull(len);
+	}
+	String(const String& str)
+	{
+		len = str.len;
+		string = new char[len+1];
+		memcpy(string, str.string, str.len);
+		SetTotalMem(len);
+		AddLastNull(len);
+	}
+	void Copy(const String& str)
+	{
+		len = str.len;
 
-    // 문자 c가 n개 있는 문자열
-    string(char c, int n): str(nullptr), len(0)
-    {
-        if (n < 0) n = 0;
-        len = n;
-        str = new char[len + 1];
-        for (int i = 0; i < len; ++i) str[i] = c;
-        str[len] = '\0';
-    }
+		if (str.len > totalMemory)
+		{
+			delete[] string;
+			string = new char[len+1];
+		}
+		memcpy(string, str.string, str.len);
+		SetTotalMem(len);
+		AddLastNull(len);
+	}
+	void Format(const String& str)
+	{
+		int totalLen = str.len + len;
+		if (totalLen > totalMemory)
+		{
+			char* newStr = new char[totalLen+1];
+			memcpy(newStr,string ,len);
+			memcpy(newStr+len, str.string, str.len);
+			delete[] string;
+			string = newStr;
+		}
+		else
+		{
+			memcpy(string + len, str.string, str.len);
+		}
+		len = totalLen;
+		SetTotalMem(len);
+		AddLastNull(len);
+	}
+	String& operator=(const String& str)
+	{
+		len = str.len;
+		if (str.len > totalMemory)
+		{
+			char* newString = new char[str.len+1];
+			memcpy(newString, str.string, str.len);
+			delete[] string;
+			string = newString;
 
-    // C 문자열로부터 생성
-    string(const char* s)
-        : str(nullptr), len(0)
-    {
-        if (!s) s = "";
-        len = static_cast<int>(std::strlen(s));
-        str = new char[len + 1];
-        std::strcpy(str, s);
-    }
-
-    // 복사 생성자 (깊은 복사)
-    string(const string& s)
-        : str(nullptr), len(s.len)
-    {
-        str = new char[len + 1];
-        std::strcpy(str, s.str);
-    }
-
-    // 복사 대입 연산자 (Rule of Three)
-    string& operator=(const string& s)
-    {
-        if (this == &s) return *this;
-
-        char* newbuf = new char[s.len + 1];
-        std::strcpy(newbuf, s.str);
-
-        delete[] str;
-        str = newbuf;
-        len = s.len;
-        return *this;
-    }
-
-    ~string()
-    {
-        delete[] str;
-    }
-
-    // 뒤에 붙이기
-    void add_string(const string& s)
-    {
-        char* newbuf = new char[len + s.len + 1];
-        std::strcpy(newbuf, str);
-        std::strcat(newbuf, s.str);
-
-        delete[] str;
-        str = newbuf;
-        len += s.len;
-    }
-
-    // 내용 덮어쓰기(복사)
-    void copy_string(const string& s)
-    {
-        if (this == &s) return;
-        *this = s; // 대입 연산자 재사용
-    }
-    bool equal(const string& s)
-    {
-        if (s.len != len) return false;
-        for (int i = 0; i < len; i++)
-        {
-            if (str[i] != s.str[i]) return false;
-        }
-        return true;
-    }
-
-    int strlen() const
-    {
-        return len;
-    }
-
-    const char* c_str() const
-    {
-        return str;
-    }
+		}
+		else
+		{
+			memcpy(string, str.string, str.len);
+		}
+		SetTotalMem(len);
+		AddLastNull(len);
+		return *this;
+	}
+	const char* GetString()
+	{
+		return string;
+	}
 };
 
 int main()
 {
-    string s1("abc");     // "aaa"
-    string s2("adc");       // "bc"
-    //s1.add_string(s2);     // "aaabc"
-    std::cout << s1.c_str() << "\n";   // aaabc
-    std::cout << s1.strlen() << "\n";  // 5
-    std::cout << s1.equal(s2);
-    return 0;
+	String str1('a');
+	String str2("hello");
+	String str3(str2);
+	str1.Format(str3);
+	
+	char i[100];
+	std::cin >> i;
+	str1.Copy(i);
+	std::cout << str1.GetString();
+	
+
+	return 0;
 }
